@@ -1,10 +1,9 @@
-import React, { StatelessComponent, useState, useEffect } from "react"
+import React, { StatelessComponent } from "react"
 import { graphql } from "gatsby"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { PostPreview } from "../components/post-preview"
-import { Flipped, Flipper } from "react-flip-toolkit";
-import { StaggerAnimationContainer, Stagger, StaggerWrapper } from "../components/stagger-wrapper";
+import { Stagger, StaggerWrapper } from "../components/stagger-wrapper";
 
 export const BlogIndex: StatelessComponent<{ data: any, location: any }> = ({ data, location }) => {
   const posts = data.allMarkdownRemark.edges.map(x => x.node) as Post[];
@@ -41,7 +40,7 @@ export const pageQuery = graphql`
     }
     allMarkdownRemark(
       sort: { fields: [frontmatter___date], order: DESC }
-      filter: { frontmatter: { draft: { ne: true } } }
+      filter: { frontmatter: { draft: { ne: true } } fileAbsolutePath: { regex: "^\/blog\/" } }
       limit: 1000
     ) {
       edges {

@@ -10,8 +10,8 @@ const LayoutContainer = styled.div`
   padding: ${rhythm(1.5)} ${rhythm(3 / 4)};
 `;
 
-export const Layout: StatelessComponent<{ location: any }> = ({ location, children }) =>
-  <LayoutContainer>
+export const Layout: StatelessComponent<{ location: any }> = ({ location, children, ...rest }) =>
+  <LayoutContainer {...rest}>
     <Nav path={location.pathname} />
     <main>{children}</main>
     <footer

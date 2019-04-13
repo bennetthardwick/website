@@ -1,8 +1,16 @@
 const path = require(`path`)
-const { createFilePath } = require(`gatsby-source-filesystem`)
+const {
+  createFilePath
+} = require(`gatsby-source-filesystem`)
 
-exports.createPages = ({ graphql, actions }) => {
-  const { createPage, createRedirect } = actions
+exports.createPages = ({
+  graphql,
+  actions
+}) => {
+  const {
+    createPage,
+    createRedirect
+  } = actions
 
   const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
   const tagPage = path.resolve(`./src/templates/tag-page.tsx`)
@@ -10,13 +18,23 @@ exports.createPages = ({ graphql, actions }) => {
   return graphql(
     `
       {
+
+	      allFile {
+         nodes {
+          sourceInstanceName
+           childMarkdownRemark {
+             id
+           }
+         }
+        }
+
         allMarkdownRemark(
           sort: { fields: [frontmatter___date], order: DESC }
           filter: { frontmatter: { draft: { ne: true } } }
           limit: 1000
         ) {
-          edges {
-            node {
+          nodes {
+              id
               fields {
                 slug
               }
@@ -26,7 +44,6 @@ exports.createPages = ({ graphql, actions }) => {
               }
             }
           }
-        }
       }
     `
   ).then(result => {
@@ -40,19 +57,21 @@ exports.createPages = ({ graphql, actions }) => {
       statusCode: 302
     });
 
+    const postIds = new Set(result.data.allFile.nodes.filter(x => x.sourceInstanceName === 'blog' && x.childMarkdownRemark).map(x => x.childMarkdownRemark.id));
+
     // Create blog posts pages.
-    const posts = result.data.allMarkdownRemark.edges
-    const tags = new Set(posts.reduce((acc, post) => acc.concat(post.node.frontmatter.tags || []), []))
+    const posts = result.data.allMarkdownRemark.nodes.filter(x => postIds.has(x.id));
+    const tags = new Set(posts.reduce((acc, post) => acc.concat(post.frontmatter.tags || []), []))
 
     posts.forEach((post, index) => {
       const previous = index === posts.length - 1 ? null : posts[index + 1].node
       const next = index === 0 ? null : posts[index - 1].node
 
       createPage({
-        path: post.node.fields.slug,
+        path: post.fields.slug,
         component: blogPost,
         context: {
-          slug: post.node.fields.slug,
+          slug: post.fields.slug,
           previous,
           next,
         },
@@ -72,11 +91,20 @@ exports.createPages = ({ graphql, actions }) => {
   })
 }
 
-exports.onCreateNode = ({ node, actions, getNode }) => {
-  const { createNodeField } = actions
+exports.onCreateNode = ({
+  node,
+  actions,
+  getNode
+}) => {
+  const {
+    createNodeField
+  } = actions
 
   if (node.internal.type === `MarkdownRemark`) {
-    const value = createFilePath({ node, getNode })
+    const value = createFilePath({
+      node,
+      getNode
+    })
     createNodeField({
       name: `slug`,
       node,
