@@ -43,6 +43,7 @@ const NoteContainer = styled.div<{
 
   ${props => props.server ? css`
     width: 100%;
+    height: fit-content;
     ${PreviewNote} {
       width: 100% !important;
     }
@@ -53,7 +54,7 @@ const NoteContainer = styled.div<{
 
   top: 0;
   left: 0;
-  height: fit-content;
+  height: auto;
   min-height: 60px;
   border: solid #e0e0e0 1px;
   padding: 12px 16px;
@@ -63,7 +64,7 @@ const NoteContainer = styled.div<{
   margin-bottom: 8px;
 
   opacity: ${props => props.visible ? 1 : 0};
-  transition: opacity 0.3s;
+  transition: opacity 0.8s;
 
   :hover {
     box-shadow: 0px 1px 4px rgba(28, 28, 28, 0.2);
@@ -84,8 +85,8 @@ const NoteContainer = styled.div<{
         height: fit-content;
         width: 600px;
         z-index: 10;
-        top: 20vh;
-        max-height: 78vh;
+        top: 10vh;
+        max-height: 88vh;
         overflow-y: auto;
 
         &::-webkit-scrollbar-track {
@@ -111,7 +112,6 @@ const NoteContainer = styled.div<{
 
         @media (max-width: 693px) {
           width: 94vw;
-          top: 15vh;
           left: calc(50% - 47vw);
         }
         

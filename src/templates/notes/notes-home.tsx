@@ -62,7 +62,7 @@ export const Notes: StatelessComponent<{
             <h1>Notes</h1>
           </Stagger>
           <Stagger id="stuff">
-            <p>Some stuff I done learned.</p>
+            <p>Some stuff I done learned. Click on a note to read more.</p>
           </Stagger>
         </StaggerWrapper>
       </header>

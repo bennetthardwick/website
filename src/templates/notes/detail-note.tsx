@@ -35,14 +35,14 @@ const Template: StatelessComponent<{ location: any, pageContext: { note: BaseNot
             </p>
           </Stagger>
           <Stagger id="stuff">
-            <Note />
+            <Note showTitle={false} />
           </Stagger>
         </StaggerWrapper>
       </header>
     </Layout>
   )
 
-  const ModalLayout = <Note />
+  const ModalLayout = <Note showTitle={true} />
 
   return hasNotesPageLoaded(location.pathname) ? ModalLayout : PreloadedLayout;
 

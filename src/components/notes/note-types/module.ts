@@ -8,14 +8,14 @@ export interface BaseNote<T = any> {
   id: string
   title: string;
   name: string;
-  type: NoteType
+  type: NoteType;
   data: T
 }
 
 interface NoteTypeMap {
     [key: string]: {
-        preview: FunctionComponent<BaseNote>
-        detail: FunctionComponent<BaseNote>
+        preview: FunctionComponent<BaseNote>,
+        detail: FunctionComponent<BaseNote & { showTitle?: boolean }>
     }
 }
 
