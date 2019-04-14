@@ -1,13 +1,7 @@
 import React, { StatelessComponent, useEffect, useRef, useState } from "react"
-import { NOTE_WIDTH, MARGIN_SIZE, Note } from "./preview-note"
-import { rhythm } from "../../utils/typography"
-import styled, { css } from "styled-components"
+import { NOTE_WIDTH, MARGIN_SIZE, Note } from "./note"
+import styled from "styled-components"
 import { Flipped, Flipper } from "react-flip-toolkit"
-
-const OriginalWidth = css`
-  max-width: calc(${rhythm(24)} - calc(${rhythm(3 / 4)} * 2));
-  margin: auto;
-`
 
 const SelectedBackdrop = styled.div<{ open: boolean }>`
   position: fixed;
@@ -15,6 +9,7 @@ const SelectedBackdrop = styled.div<{ open: boolean }>`
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 5;
   transition: background 0.6s;
   background: rgba(28, 28, 28, ${props => (props.open ? 0.2 : 0.0)});
 
@@ -24,8 +19,7 @@ const SelectedBackdrop = styled.div<{ open: boolean }>`
 const NotesContainer = styled.div<{ height?: number; width: number }>`
   position: relative;
   width: ${props => props.width}px;
-  min-height: 300px;
-  height: ${props => (props.height ? props.height + "px" : "auto")};
+  height: ${props => (props.height !== undefined ? props.height + "px" : "auto")};
   margin: auto;
 `
 
@@ -57,22 +51,6 @@ const HiddenNotesContainer = styled.div`
   visibility: hidden;
 `
 
-const b = [
-  {
-    id: "a",
-    text:
-      "wowowowo asd fas df asdlkjfa;lskdj f;alskjd f;alks jdf;lkajs d;flkajs d;lkfjas d;lkfja sd;lkfj",
-  },
-  { id: "b", text: "wowowowo" },
-  {
-    id: "c",
-    text: "wowowowo asdfajsd fa sd fas df as df askdjflaskdjflkajshd flakjshdf",
-  },
-  { id: "d", text: "wowowowo" },
-  { id: "e", text: "wowowowo asdf" },
-  { id: "f", text: "wowowowo" },
-]
-
 const isSSR = () => typeof window == "undefined"
 
 const calculateColumnCount = () =>
@@ -86,16 +64,14 @@ const calculateColumnCount = () =>
 
 const WINDOW_COLUMN_COUNT = () => (!isSSR() ? calculateColumnCount() : 4)
 
-export const NotesGrid: StatelessComponent = ({ children, ...rest }) => {
+
+export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ children, notesList, ...rest }) => {
   const [shouldUpdate, setShouldUpdate] = useState(false)
   const [shouldRecalculatePosition, setRecalculatePosition] = useState(false)
-  const [containerHeight, setContainerHeight] = useState(0)
   const [columnCount, setColumnCount] = useState(WINDOW_COLUMN_COUNT())
   const [notesMap, setNotesMap] = useState({})
-  const [notesList, setNotesList] = useState([...b])
-  const [columnSize, setColumnSize] = useState(
-    Array.from({ length: columnCount }).map(() => 0)
-  )
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [columnSize, setColumnSize] = useState(Array.from({ length: columnCount }).map(() => 0));
   const [selected, setSelected] = useState(undefined)
   const [topElement, setTopElement] = useState(undefined)
 
@@ -164,11 +140,11 @@ export const NotesGrid: StatelessComponent = ({ children, ...rest }) => {
 
     return {
       ...notesList
-        .filter(x => !!nm[x.id])
+        .filter(id => !!nm[id])
         .reduce(
-          (acc, a) => {
-            acc[a.id] = {
-              ...acc[a.id],
+          (acc, id) => {
+            acc[id] = {
+              ...acc[id],
               visible: true,
             }
             return acc
@@ -179,22 +155,22 @@ export const NotesGrid: StatelessComponent = ({ children, ...rest }) => {
   }
 
   function recalculateNoteSizes(): void {
-    const newColumns = Array.from({ length: columnCount }).map(() => 0)
+    const newColumns = Array.from({ length: columnCount }).map(() => 0);
 
     setNotesMap(
       notesList
-        .filter(x => !!notesMap[x.id])
+        .filter(id => !!notesMap[id])
         .reduce(
-          (acc, a) => {
+          (acc, id) => {
             const index = newColumns.indexOf(Math.min(...newColumns))
             const top = newColumns[index]
             const left = index * (NOTE_WIDTH + MARGIN_SIZE)
-            const height = notesMap[a.id].height
+            const height = notesMap[id].height
 
             newColumns[index] += height + MARGIN_SIZE
 
-            acc[a.id] = {
-              ...acc[a.id],
+            acc[id] = {
+              ...acc[id],
               height,
               left,
               top,
@@ -206,41 +182,19 @@ export const NotesGrid: StatelessComponent = ({ children, ...rest }) => {
         )
     )
 
-    setColumnSize(newColumns)
+    setColumnSize(newColumns);
     setContainerHeight(Math.max(...newColumns))
     setRecalculatePosition(false)
     setShouldUpdate(!shouldUpdate)
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      setNotesList([
-        ...notesList,
-        {
-          id: "g",
-          text:
-            "wowowowo asd fas df asdlkjfa;lskdj f;alskjd f;alks jdf;lkajs d;flkajs d;lkfjas d;lkfja sd;lkfj",
-        },
-        { id: "h", text: "wowowowo" },
-        {
-          id: "i",
-          text:
-            "wowowowo asdfajsd fa sd fas df as df askdjflaskdjflkajshd flakjshdf",
-        },
-        { id: "j", text: "wowowowo" },
-        { id: "k", text: "wowowowo asdf" },
-        { id: "l", text: "wowowowo" },
-      ])
-    }, 3000)
-  }, [false])
-
-  useEffect(() => {
     for (const note of notesList) {
-      if (!notesMap[note.id]) {
+      if (!notesMap[note]) {
         continue
       }
 
-      if (!notesMap[note.id].visible) {
+      if (!notesMap[note].visible) {
         setNotesMap(setAllNotesVisible(notesMap))
         setShouldUpdate(!shouldUpdate)
         break
@@ -262,28 +216,24 @@ export const NotesGrid: StatelessComponent = ({ children, ...rest }) => {
     <div {...rest}>
       <HiddenNotesContainer ref={notesRef}>
         {notesList
-          .filter(x => !notesMap[x.id])
-          .map(x => (
+          .filter(id => !notesMap[id])
+          .map(id => (
             <Note
-              key={x.id}
+              key={id}
               className="preview-note"
-              data-note-id={x.id}
-              type={"text"}
-              id={x.id}
-              data={x.text}
+              data-note-id={id}
+              noteId={id}
             />
           ))}
       </HiddenNotesContainer>
       <Flipper flipKey={shouldUpdate}>
         {isSSR() ? (
           <SSRNotesContainer>
-            {notesList.map(({ id, text }) => (
+            {notesList.map(id => (
               <Flipped translate scale key={id} flipId={id}>
                 <Note
                   onSelected={selectNote}
-                  type={"text"}
-                  id={id}
-                  data={text}
+                  noteId={id}
                   visible={true}
                   server={true}
                   key={id}
@@ -298,20 +248,18 @@ export const NotesGrid: StatelessComponent = ({ children, ...rest }) => {
                 ? columnCount * (NOTE_WIDTH + MARGIN_SIZE) - MARGIN_SIZE
                 : undefined
             }
-            height={columnCount !== 1 ? containerHeight : undefined}
+            height={containerHeight}
           >
             {notesList
-              .filter(x => !!notesMap[x.id])
-              .map(({ id, text }) => (
+              .filter(id => !!notesMap[id])
+              .map(id => (
                 <Flipped translate scale key={id} flipId={id}>
                   <Note
                     server={columnCount === 1}
                     topElement={id === topElement}
                     open={id === selected}
                     onSelected={selectNote}
-                    type={"text"}
-                    id={id}
-                    data={text}
+                    noteId={id}
                     visible={notesMap[id].visible}
                     key={id}
                     rect={columnCount !== 1 && notesMap[id]}

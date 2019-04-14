@@ -15,6 +15,10 @@ exports.createPages = ({
   const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
   const tagPage = path.resolve(`./src/templates/tag-page.tsx`)
 
+
+  const dataNotesPreview = path.resolve(`./src/templates/notes/preview-note.tsx`)
+  const dataNotesDetail = path.resolve(`./src/templates/notes/detail-note.tsx`)
+
   return graphql(
     `
       {
@@ -22,8 +26,13 @@ exports.createPages = ({
 	      allFile {
          nodes {
           sourceInstanceName
+          id
            childMarkdownRemark {
              id
+             html
+             frontmatter {
+               title
+             }
            }
          }
         }
@@ -87,6 +96,29 @@ exports.createPages = ({
         }
       })
     })
+
+
+    /**
+     * NOTES
+     */
+
+
+    const notes = result.data.allFile.nodes.filter(x => x.sourceInstanceName === 'notes');
+
+    for (const note of notes) {
+
+      createPage({
+        path: `/data/notes/preview/${note.id}`,
+        component: dataNotesPreview
+      });
+
+      createPage({
+        path: `/data/notes/detail/${note.id}`,
+        component: dataNotesDetail
+      });
+
+    }
+
 
   })
 }
