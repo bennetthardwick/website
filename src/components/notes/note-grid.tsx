@@ -2,6 +2,9 @@ import React, { StatelessComponent, useEffect, useRef, useState } from "react"
 import { NOTE_WIDTH, MARGIN_SIZE, Note } from "./note"
 import styled from "styled-components"
 import { Flipped, Flipper } from "react-flip-toolkit"
+import { BaseNote } from "./note-types/module";
+
+// declare var ___loader: any;
 
 const SelectedBackdrop = styled.div<{ open: boolean }>`
   position: fixed;
@@ -19,6 +22,8 @@ const SelectedBackdrop = styled.div<{ open: boolean }>`
 const NotesContainer = styled.div<{ height?: number; width: number }>`
   position: relative;
   width: ${props => props.width}px;
+  min-height: 50vh;
+  transition: height 0.2s;
   height: ${props => (props.height !== undefined ? props.height + "px" : "auto")};
   margin: auto;
 `
@@ -65,7 +70,7 @@ const calculateColumnCount = () =>
 const WINDOW_COLUMN_COUNT = () => (!isSSR() ? calculateColumnCount() : 4)
 
 
-export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ children, notesList, ...rest }) => {
+export const NotesGrid: StatelessComponent<{ notesList: BaseNote<any>[] }> = ({ children, notesList, ...rest }) => {
   const [shouldUpdate, setShouldUpdate] = useState(false)
   const [shouldRecalculatePosition, setRecalculatePosition] = useState(false)
   const [columnCount, setColumnCount] = useState(WINDOW_COLUMN_COUNT())
@@ -77,11 +82,23 @@ export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ childre
 
   const notesRef = useRef<HTMLDivElement | null>()
 
+  useEffect(() => {
+    measureNoteRects()
+  }, [notesList]);
+
   function measureNoteRects(): void {
-    setNotesMap(
+
+    const newNotes = 
       Array.from(
         notesRef.current!.getElementsByClassName("preview-note")
-      ).reduce(
+      );
+
+      if (newNotes.length <= 0) {
+        return
+      }
+
+    setNotesMap(
+      newNotes.reduce(
         (acc, a, i) => {
           const { height } = a.getBoundingClientRect()
           const index = columnSize.indexOf(Math.min(...columnSize))
@@ -101,11 +118,6 @@ export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ childre
     )
     setContainerHeight(Math.max(...columnSize))
   }
-
-  useEffect(() => {
-    measureNoteRects()
-  }, [notesList])
-
   useEffect(() => {
     if (selected) {
       setTopElement(selected)
@@ -140,11 +152,11 @@ export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ childre
 
     return {
       ...notesList
-        .filter(id => !!nm[id])
+        .filter(note => !!nm[note.id])
         .reduce(
-          (acc, id) => {
-            acc[id] = {
-              ...acc[id],
+          (acc, note) => {
+            acc[note.id] = {
+              ...acc[note.id],
               visible: true,
             }
             return acc
@@ -159,9 +171,9 @@ export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ childre
 
     setNotesMap(
       notesList
-        .filter(id => !!notesMap[id])
+        .filter(({ id }) => !!notesMap[id])
         .reduce(
-          (acc, id) => {
+          (acc, { id }) => {
             const index = newColumns.indexOf(Math.min(...newColumns))
             const top = newColumns[index]
             const left = index * (NOTE_WIDTH + MARGIN_SIZE)
@@ -190,11 +202,11 @@ export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ childre
 
   useEffect(() => {
     for (const note of notesList) {
-      if (!notesMap[note]) {
+      if (!notesMap[note.id]) {
         continue
       }
 
-      if (!notesMap[note].visible) {
+      if (!notesMap[note.id].visible) {
         setNotesMap(setAllNotesVisible(notesMap))
         setShouldUpdate(!shouldUpdate)
         break
@@ -212,31 +224,34 @@ export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ childre
     setShouldUpdate(!shouldUpdate)
   }
 
+  function updateAnimation(): void {
+    setShouldUpdate(!shouldUpdate);
+  }
+
   return (
     <div {...rest}>
       <HiddenNotesContainer ref={notesRef}>
         {notesList
-          .filter(id => !notesMap[id])
-          .map(id => (
+          .filter(({ id }) => !notesMap[id])
+          .map(x => (
             <Note
-              key={id}
+              key={x.id}
               className="preview-note"
-              data-note-id={id}
-              noteId={id}
+              data-note-id={x.id}
+              {...x}
             />
           ))}
       </HiddenNotesContainer>
       <Flipper flipKey={shouldUpdate}>
         {isSSR() ? (
           <SSRNotesContainer>
-            {notesList.map(id => (
-              <Flipped translate scale key={id} flipId={id}>
+            {notesList.map(x => (
+              <Flipped translate scale key={x.id} flipId={x.id}>
                 <Note
                   onSelected={selectNote}
-                  noteId={id}
                   visible={true}
                   server={true}
-                  key={id}
+                  {...x}
                 />
               </Flipped>
             ))}
@@ -251,18 +266,18 @@ export const NotesGrid: StatelessComponent<{ notesList: string[] }> = ({ childre
             height={containerHeight}
           >
             {notesList
-              .filter(id => !!notesMap[id])
-              .map(id => (
-                <Flipped translate scale key={id} flipId={id}>
+              .filter(({ id }) => !!notesMap[id])
+              .map(x => (
+                <Flipped translate scale key={x.id} flipId={x.id}>
                   <Note
                     server={columnCount === 1}
-                    topElement={id === topElement}
-                    open={id === selected}
+                    topElement={x.id === topElement}
+                    open={x.id === selected}
                     onSelected={selectNote}
-                    noteId={id}
-                    visible={notesMap[id].visible}
-                    key={id}
-                    rect={columnCount !== 1 && notesMap[id]}
+                    visible={notesMap[x.id].visible}
+                    key={x.id}
+                    rect={columnCount !== 1 && notesMap[x.id]}
+                    {...x}
                   />
                 </Flipped>
               ))}

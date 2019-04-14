@@ -1,11 +1,12 @@
-import React, { StatelessComponent, useState, useEffect } from "react"
-import { NotesGrid } from "../components/notes/note-grid"
+import { graphql } from "gatsby"
+import React, { StatelessComponent, useState } from "react"
 import styled, { css } from "styled-components"
-import Layout from "../components/layout"
-import { SEO } from "../components/seo"
-import { Stagger, StaggerWrapper } from "../components/stagger-wrapper"
-import { rhythm } from "../utils/typography"
-import { PageRenderer, graphql } from "gatsby"
+import Layout from "../../components/layout"
+import { NotesGrid } from "../../components/notes/note-grid"
+import { SEO } from "../../components/seo"
+import { Stagger, StaggerWrapper } from "../../components/stagger-wrapper"
+import { rhythm } from "../../utils/typography"
+import { BaseNote } from "../../components/notes/note-types/module"
 
 const OriginalWidth = css`
   max-width: calc(${rhythm(24)} - calc(${rhythm(3 / 4)} * 2));
@@ -34,29 +35,13 @@ const NotesLayout = styled(Layout)`
   max-width: calc(${484}px + calc(${rhythm(3 / 4)} * 2));
 `
 
-const isSSR = () => typeof window === 'undefined';
+export const Notes: StatelessComponent<{
+  data: any
+  location: any
+  pageContext: { notes: BaseNote<any>[] }
+}> = ({ data, location, pageContext: { notes } }) => {
 
-export const Notes: StatelessComponent<{ data: any; location: any }> = ({
-  data,
-  location,
-}) => {
-
-  const [ notesList, setNotesList ] = useState( isSSR() ? data.allFile.nodes.map(x => x.id) : []);
-
-  useEffect(() => {
-    const nl = data.allFile.nodes.map(x => x.id);
-    const nlp = nl.map(id => ( ___loader as any).getResourcesForPathname(`/data/notes/preview/${id}`));
-
-    for (const n of nl) {
-      ___loader.getResourcesForPathname(`/data/notes/detail/${n}`);
-    }
-
-
-    Promise.all(nlp).then(() => {
-      setTimeout(() => setNotesList(nl));
-    })
-
-  }, [false]);
+  const [notesList, setNotesList] = useState(notes);
 
   return (
     <NotesLayout location={location}>

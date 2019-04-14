@@ -6,9 +6,9 @@ export type NoteType = keyof typeof NOTE_TYPE_MAP;
 
 export interface BaseNote<T = any> {
   id: string
+  title: string;
+  name: string;
   type: NoteType
-  created?: Date
-  modified?: Date
   data: T
 }
 
