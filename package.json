@@ -41,7 +41,7 @@
     "gatsby-remark-smartypants": "^2.1.5",
     "gatsby-source-filesystem": "^2.0.40",
     "gatsby-transformer-remark": "^2.4.0",
-    "gatsby-transformer-sharp": "^2.1.21",
+    "gatsby-transformer-sharp": "^2.2.12",
     "gatsby-transformer-yaml": "^2.1.11",
     "katex": "^0.10.1",
     "prismjs": "^1.16.0",
