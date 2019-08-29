@@ -67,7 +67,7 @@
     "babel-plugin-styled-components": "^1.10.1",
     "gh-pages": "^2.0.1",
     "prettier": "^1.18.2",
-    "remark-parse": "^6.0.3",
+    "remark-parse": "^7.0.1",
     "webpack": "^4.34.0"
   },
   "homepage": "https://github.com/gatsbyjs/gatsby-starter-blog#readme",
