@@ -68,7 +68,7 @@
     "gh-pages": "^2.0.1",
     "prettier": "^1.18.2",
     "remark-parse": "^6.0.3",
-    "webpack": "^4.34.0"
+    "webpack": "^4.39.3"
   },
   "homepage": "https://github.com/gatsbyjs/gatsby-starter-blog#readme",
   "keywords": [
