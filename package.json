@@ -46,7 +46,7 @@
     "katex": "^0.10.1",
     "prismjs": "^1.16.0",
     "react": "^16.9.0",
-    "react-dom": "^16.8.6",
+    "react-dom": "^16.9.0",
     "react-flip-toolkit": "^6.6.4",
     "react-flippy": "^0.1.5",
     "react-heatmap-grid": "^0.8.1",
