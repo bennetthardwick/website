@@ -1,7 +1,7 @@
 ---
 title: "Writing a React Recoil clone from scratch in under 100 lines"
 description: "Recoil is a brand new React library and approach to state management. Here's my attempt at implementing it in under 100 lines."
-date: 09-09-2020
+date: 2020-09-09
 tags:
   - "javascript"
   - "typescript"
