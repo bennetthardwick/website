@@ -1,5 +1,5 @@
 ---
-title: "Writing a React Recoil clone from scratch in under 100 lines"
+title: "Rewriting Facebook's \"Recoil\" React library from scratch in 100 lines"
 description: "Recoil is a brand new React library and approach to state management. Here's my attempt at implementing it in under 100 lines."
 date: 2020-09-09
 tags:
@@ -267,8 +267,10 @@ Give yourself a pat on your back!
 
 Finished?
 
-For the sake of brevity (and in order to use that clickbaity "100 lines" title), I decided to omit comments, tests and examples.
+For the sake of brevity (and in order to use that clickbaity "100 lines" title) I decided to omit comments, tests and examples.
 If you want a more thorough explanation (or want to play with examples), all that stuff is up in my ["recoil-clone" Github repository.](https://github.com/bennetthardwick/recoil-clone)
+
+There's also an [example site](https://100-line-recoil-clone.netlify.app/) live so you can test it out.
 
 ## Conclusion
 
@@ -276,15 +278,15 @@ I once read that all good software should be simple enough that anyone could rew
 Recoil has a lot of features that I haven't implemented here, but it's exciting to see such a simple and intuitive design that _can_ reasonably be implemented by hand.
 
 Before you decide to roll my bootleg Recoil in production though, make sure you look into the following things:
-  - Selectors never unsubscribe from the atoms, this means they'll leak memory if you stop using them
-  - React [is introducing](https://github.com/facebook/react/pull/18000) a hook called `useMutableSource`. If you're on a recent version of React you should use this instead of `setState` in `useCoiledValue`
-  - Selectors and Atoms only do a shallow comparison between states before re-rendering, in some cases it might make sense to change this to be a deep comparison
-  - Recoil uses a `key` field for each atom and selector, this is used as metadata for a feature called "app-wide observation". I included it despite not using it to keep the API familiar.
-  - Recoil supports async in selectors, this would be a massive undertaking so I've made sure to exclude it
+  - Selectors never unsubscribe from the atoms. This means they'll leak memory when you stop using them.
+  - React [has introduced](https://github.com/facebook/react/pull/18000) a hook called `useMutableSource`. If you're on a recent version of React you should use this instead of `setState` in `useCoiledValue`.
+  - Selectors and Atoms only do a shallow comparison between states before re-rendering. In some cases it might make sense to change this to be a deep comparison.
+  - Recoil uses a `key` field for each atom and selector which is used as metadata for a feature called "app-wide observation". I included it despite not using it to keep the API familiar.
+  - Recoil supports async in selectors, this would be a massive undertaking so I've made sure to exclude it.
 
 Other than that, hopefully I've shown you that you don't always have to look to a library when deciding on state management solutions.
 More often then not you can engineer something that perfectly fits your solution - [that's how Recoil was born](https://recoiljs.org/docs/introduction/motivation) after all.
 
 ---
 
-After writing this post I was shown the [jotai](https://github.com/react-spring/jotai) library. It's a lot like Recoil and supports async!
+After writing this post I was shown the [jotai](https://github.com/react-spring/jotai) library. It's for a very similar feature set to my clone and supports async!
