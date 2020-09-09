@@ -7,4 +7,4 @@ command = "npm run index-wiki && hugo --gc --minify && ./replace-amp-images ./pu
 HUGO_VERSION = "0.74.3"
 
 [context.deploy-preview]
-command = "npm run index-wiiki && hugo --gc --minify -b $DEPLOY_PRIME_URL && ./replace-amp-images ./public/amp"
+command = "npm run index-wiki && hugo --gc --minify -b $DEPLOY_PRIME_URL && ./replace-amp-images ./public/amp"
