@@ -10,11 +10,11 @@ tags:
   - "beginner"
 ---
 
-Recoil is a slick new React library written by some people at Facebook that work on a tool called ["Comparison View"](https://www.youtube.com/watch?v=_ISAA_Jt9kI).
+Recoil is a slick new React library written by some people at Facebook that work on a tool called ["Comparison View."](https://www.youtube.com/watch?v=_ISAA_Jt9kI)
 It came about because of ergonomics and [performance issues with context](https://github.com/facebook/react/issues/14620) and `useState`.
 It's a very clever library, and almost everyone will find a use for it - check out this [explainer video](https://www.youtube.com/watch?v=_ISAA_Jt9kI) if you want to learn more.
 
-At first I was really taken a back by the talk of graph theory and the wondrous magic that Recoil performs, but after a while I started to see that maybe it's not that special after all. Here's my shot at implementing something similar!
+At first I was really taken aback by the talk of graph theory and the wondrous magic that Recoil performs, but after a while I started to see that maybe it's not that special after all. Here's my shot at implementing something similar!
 
 Before I get started, please note that the way I've implemented my Recoil clone is completely different to how the actual Recoil is implemented.
 Don't assume anything about Recoil from this.
@@ -25,7 +25,7 @@ Recoil is built around the concept of "atoms".
 Atoms are small atomic pieces of state that you can subscribe to and update in your components.
 
 To begin, I'm going to create a class called `Atom` that is going to wrap some value `T`.
-I've added helper methods `update` and `snapshot` to allow you get and set the value.
+I've added helper methods `update` and `snapshot` to allow you to get and set the value.
 
 ```typescript
 class Atom<T> {
@@ -180,13 +180,13 @@ In our case, I'm going to rename the `get` method to be called `generator`.
 I'm calling it this because it's essentially a factory function that's supposed to generate the next value of the state, based on whatever is piped into it.
 
 The way that selectors listen to atoms and selectors is by using another method - curiously named `get` as well.
-Whenever this `get` method is called, we fetch the dependencies value and listen for changes.
+Whenever this `get` method is called, we fetch the dependency's value and listen for changes.
 To make sure we only ever subscribe once, we use a `Set` to keep track of the deps.
 
 After this, we finish running the `generator` method and update the selector's internal state.
 
 You might notice in the constructor that I've written `super(undefined as any)`.
-This is because `super` must be the very first line a derived class's constructor.
+This is because `super` must be the very first line in a derived class's constructor.
 If it helps, in this case you can think of `undefined` as uninitialised memory.
 
 ```typescript
@@ -284,3 +284,7 @@ Before you decide to roll my bootleg Recoil in production though, make sure you 
 
 Other than that, hopefully I've shown you that you don't always have to look to a library when deciding on state management solutions.
 More often then not you can engineer something that perfectly fits your solution - [that's how Recoil was born](https://recoiljs.org/docs/introduction/motivation) after all.
+
+---
+
+After writing this post I was shown the [jotai](https://github.com/react-spring/jotai) library. It's a lot like Recoil and supports async!
